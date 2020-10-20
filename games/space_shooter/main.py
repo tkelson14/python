@@ -38,6 +38,13 @@ class Ship:
         #pygame.draw.rect(window, (255,0,0),(self.x, self.y, 50, 50))
         window.blit(self.ship_img, (self.x, self.y))
 
+    def get_width(self):
+        return self.ship_img.get_width()
+
+    def get_height(self):
+        return self.ship_img.get_height()
+    
+
 
 class Player(Ship):
     def  __init__(self, x, y, health=100):
@@ -46,6 +53,7 @@ class Player(Ship):
         self.laser_img = YELLOW_LASER
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
+
         
 
 def main():
@@ -82,9 +90,9 @@ def main():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_s] and player.x + player_vel > 0: #left
             player.x -= player_vel
-        if keys[pygame.K_f] and player.x + player_vel + 50 < WIDTH: #right
+        if keys[pygame.K_f] and player.x + player_vel + player.get_width() < WIDTH: #right
             player.x += player_vel
-        if keys[pygame.K_d] and player.y + player_vel + 50 < HEIGHT: #down
+        if keys[pygame.K_d] and player.y + player_vel + player.get_height() < HEIGHT: #down
             player.y += player_vel
         if keys[pygame.K_e] and player.y + player_vel > 0: #up
             player.y -= player_vel
