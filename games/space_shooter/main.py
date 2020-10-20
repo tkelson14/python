@@ -4,6 +4,7 @@ import time
 import random
 pygame.font.init()
 
+# Add scoreboard, keep enemy laser going if enemy is destroyed
 WIDTH, HEIGHT = 600, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Shooter")
@@ -110,7 +111,16 @@ class Player(Ship):
                 for obj in objs:
                     if laser.collision(obj):
                         objs.remove(obj)
-                        self.lasers.remove(laser)
+                        if laser in self.lasers:
+                            self.lasers.remove(laser)
+
+    def draw(self, window):
+        super().draw(window)
+        self.healthbar(window)
+
+    def healthbar(self, window):
+        pygame.draw.rect(window, (255,0,0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
+        pygame.draw.rect(window, (0,255,0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() * (self.health/self.max_health), 10))
 
 class Enemy(Ship):
     COLOR_MAP = {
@@ -203,13 +213,14 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                quit()
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_s] and player.x + player_vel > 0: #left
             player.x -= player_vel
         if keys[pygame.K_f] and player.x + player_vel + player.get_width() < WIDTH: #right
             player.x += player_vel
-        if keys[pygame.K_d] and player.y + player_vel + player.get_height() < HEIGHT: #down
+        if keys[pygame.K_d] and player.y + player_vel + player.get_height() + 15 < HEIGHT: #down
             player.y += player_vel
         if keys[pygame.K_e] and player.y + player_vel > 0: #up
             player.y -= player_vel
@@ -234,5 +245,20 @@ def main():
 
         player.move_lasers(-laser_vel, enemies)
 
+def main_menu():
+    title_font = pygame.font.SysFont("comicsans", 70)
+    run = True
+    while run:
+        WIN.blit(BG, (0,0))
+        title_label = title_font.render("Press any key to begin...", 1, (255,255,255))
+        WIN.blit(title_label, (WIDTH/2 - title_label.get_width()/2, 350))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                main()
+    pygame.quit()
+
         
-main()
+main_menu()
